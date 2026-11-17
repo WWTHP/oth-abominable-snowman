@@ -6,7 +6,7 @@ A yeti (about 3.3 m tall, furry, roaring) guards **snowy challenge trails**. He 
 forth across the trail. Drive past while he's off to the side, or he grabs your car and throws
 it ~200 ft in a random direction. Synced with every player in the session who runs the mod.
 
-Current version: `Mod.Version` in `AbominableSnowman/Mod.cs` (0.1.4 at migration).
+Current version: `Mod.Version` in `AbominableSnowman/Mod.cs`.
 Menu key **F6**. Settings in `MelonPreferences.cfg [AbominableSnowman]`.
 
 ## Layout
@@ -41,7 +41,7 @@ Menu key **F6**. Settings in `MelonPreferences.cfg [AbominableSnowman]`.
 
 | Version | Date | Change |
 | --- | --- | --- |
-| (unreleased) | 2026-11-15 | Analyzer/format cleanups (sealed classes, `Split(',')`, format pragmas). No behaviour change intended; **needs an in-game smoke test**. |
+| 0.1.5 | 2026-11-17 | Analyzer/format cleanups (sealed classes, `Split(',')`, format pragmas). No behaviour change intended. Released without an in-game run (user decision); **needs an in-game smoke test**. |
 | 0.1.4 | 2026-11-11 | Fur density/movement settings and menu work (see git history of the overthehill workspace; not preserved). |
 | 0.1.1 | 2026-11-10 | Network receive moved from MelonLoader NativeHook to vtable swap after the join handshake broke under Proton. |
 | 0.1.0 | 2026-11-10 | First version: yetis on snow trails, throws, roar, F6 menu, MP sync. |
