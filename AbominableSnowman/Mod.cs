@@ -13,7 +13,7 @@ namespace AbominableSnowman
     /// </summary>
     public class Mod : MelonMod
     {
-        public const string Version = "0.1.4";
+        public const string Version = "0.1.5";
         internal static MelonLogger.Instance Log;
 
         public override void OnInitializeMelon()
