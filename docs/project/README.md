@@ -7,7 +7,8 @@ forth across the trail. Drive past while he's off to the side, or he grabs your 
 it ~200 ft in a random direction. Synced with every player in the session who runs the mod.
 
 Current version: `Mod.Version` in `AbominableSnowman/Mod.cs`.
-Menu key **F6**. Settings in `MelonPreferences.cfg [AbominableSnowman]`.
+Settings: the settings hub tab **Yeti** (oth-settings-hub, F5); without the hub, menu key **F6**.
+Stored in `MelonPreferences.cfg [AbominableSnowman]`.
 
 ## Layout
 
@@ -15,7 +16,8 @@ Menu key **F6**. Settings in `MelonPreferences.cfg [AbominableSnowman]`.
 | --- | --- |
 | `Mod.cs` | lifecycle wiring |
 | `Settings.cs` | local settings + the **synced behaviour group** (`Settings.Synced`, order = wire order) |
-| `Menu.cs`, `Toast.cs` | IMGUI menu, on-screen messages |
+| `Menu.cs`, `Toast.cs` | IMGUI menu (`DrawBody` = hub tab, own window without the hub), on-screen messages |
+| `HubTab.cs` | settings hub snippet (mod-template `snippets/generic/HubTab.cs.txt`) |
 | `Snow.cs` | snow detection: terrain layer names matching `SnowKeywords`, a trail counts as snowy if `SnowTrailFraction` of waypoints are on snow (cached once terrain has streamed in) |
 | `Yetis.cs` | spawning per `ChallengeTrail`, pacing schedule, grab detection, throws, sync messages |
 | `YetiModel.cs`, `YetiFur.cs` | procedural model; fur = hundreds of tufts in one GPU-skinned mesh (root + tip bone per tuft), animated sway/wind/bristle |
@@ -41,6 +43,7 @@ Menu key **F6**. Settings in `MelonPreferences.cfg [AbominableSnowman]`.
 
 | Version | Date | Change |
 | --- | --- | --- |
+| 0.2.0 | 2026-11-17 | Menu is a tab in the settings hub (F5); F6 only opens it when the hub isn't installed. Save happens when leaving the tab. |
 | 0.1.5 | 2026-11-17 | Analyzer/format cleanups (sealed classes, `Split(',')`, format pragmas). No behaviour change intended. Released without an in-game run (user decision); **needs an in-game smoke test**. |
 | 0.1.4 | 2026-11-11 | Fur density/movement settings and menu work (see git history of the overthehill workspace; not preserved). |
 | 0.1.1 | 2026-11-10 | Network receive moved from MelonLoader NativeHook to vtable swap after the join handshake broke under Proton. |
