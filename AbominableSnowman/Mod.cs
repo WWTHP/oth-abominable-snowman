@@ -9,11 +9,12 @@ namespace AbominableSnowman
     /// Adds the Abominable Snowman to snowy challenge trails. He paces back and
     /// forth across the trail; time your run past him, or he grabs your car and
     /// hurls it a couple hundred feet in a random direction. Synced with every
-    /// player in the session who has the mod. F6 opens the menu.
+    /// player in the session who has the mod. Settings: the settings hub tab "Yeti", or F6 without the hub.
     /// </summary>
     public class Mod : MelonMod
     {
-        public const string Version = "0.1.5";
+        public const string Version = "0.2.0";
+        private static readonly string[] Categories = { "AbominableSnowman" };
         internal static MelonLogger.Instance Log;
 
         public override void OnInitializeMelon()
@@ -24,6 +25,8 @@ namespace AbominableSnowman
             Roar.Prepare();
             Net.Init();
             Yetis.Init();
+            HubTab.Register("Yeti", Menu.DrawBody, categories: Categories,
+                closed: Menu.SaveIfDirty, reset: Menu.ResetDefaults, owner: "AbominableSnowman " + Version);
             Log.Msg($"Abominable Snowman loaded. {Settings.MenuKey.Value} = menu. Sync: {Net.Status}");
         }
 

@@ -4,8 +4,9 @@ using UnityEngine;
 namespace AbominableSnowman
 {
     /// <summary>
-    /// IMGUI settings window, toggled with MenuKey (default F6). Behaviour sliders
-    /// are synced to every modded player; changes save on Save/Close.
+    /// IMGUI settings. <see cref="DrawBody"/> is the settings hub tab (registered in Mod); without the
+    /// hub, MenuKey (default F6) opens it in a window of its own. Behaviour sliders are synced to
+    /// every modded player; changes save on Save/Close (window) or when leaving the hub tab.
     /// </summary>
     internal static class Menu
     {
@@ -13,14 +14,15 @@ namespace AbominableSnowman
 
         private const float W = 540f, RowH = 26f, Pad = 12f, LabelW = 200f, ValueW = 70f;
         private static Vector2 _scroll;
-        private static float _contentH = 900f, _y;
+        private static float _contentH = 900f, _y, _w = W - 24f;
         private static bool _dirty;
         private static CursorLockMode _prevLock;
         private static bool _prevVisible;
 
         public static void Update()
         {
-            if (Settings.Pressed(Settings.MenuKey)) Toggle();
+            if (!HubTab.HubPresent && Settings.Pressed(Settings.MenuKey)) Toggle();
+            if (IsOpen && HubTab.HubPresent) Toggle(); // the hub took over
             if (IsOpen)
             {
                 Cursor.lockState = CursorLockMode.None;
@@ -38,7 +40,7 @@ namespace AbominableSnowman
             }
             else
             {
-                if (_dirty) { Settings.Save(); _dirty = false; }
+                SaveIfDirty();
                 Cursor.lockState = _prevLock;
                 Cursor.visible = _prevVisible;
             }
@@ -60,6 +62,21 @@ namespace AbominableSnowman
 
             var view = new Rect(win.x, win.y + 38f, W, viewH - 38f - 44f);
             _scroll = GUI.BeginScrollView(view, _scroll, new Rect(0f, 0f, W - 24f, _contentH));
+            try { _contentH = DrawBody(W - 24f); }
+            finally { GUI.EndScrollView(); }
+
+            float by = win.yMax - 36f;
+            if (GUI.Button(new Rect(win.x + Pad, by, 110f, 26f), "Save")) { Settings.Save(); _dirty = false; }
+            if (GUI.Button(new Rect(win.x + Pad + 120f, by, 140f, 26f), "Reset defaults")) ResetDefaults();
+            if (GUI.Button(new Rect(win.xMax - Pad - 110f, by, 110f, 26f), "Close")) Toggle();
+
+            GUI.matrix = Matrix4x4.identity;
+        }
+
+        /// <summary>Menu content at (0, 0), <paramref name="width"/> wide. Returns the height used.</summary>
+        public static float DrawBody(float width)
+        {
+            _w = width;
             _y = 0f;
 
             Section("Test");
@@ -107,27 +124,32 @@ namespace AbominableSnowman
             }
             Info("Own roar: put roar*.wav/ogg/mp3 in UserData/AbominableSnowman");
 
-            _contentH = _y + Pad;
-            GUI.EndScrollView();
+            return _y + Pad;
+        }
 
-            float by = win.yMax - 36f;
-            if (GUI.Button(new Rect(win.x + Pad, by, 110f, 26f), "Save")) { Settings.Save(); _dirty = false; }
-            if (GUI.Button(new Rect(win.x + Pad + 120f, by, 140f, 26f), "Reset defaults")) { Settings.ResetToDefaults(); _dirty = true; }
-            if (GUI.Button(new Rect(win.xMax - Pad - 110f, by, 110f, 26f), "Close")) Toggle();
+        public static void SaveIfDirty()
+        {
+            if (!_dirty) return;
+            Settings.Save();
+            _dirty = false;
+        }
 
-            GUI.matrix = Matrix4x4.identity;
+        public static void ResetDefaults()
+        {
+            Settings.ResetToDefaults();
+            _dirty = true;
         }
 
         private static void Section(string title)
         {
             _y += 8f;
-            GUI.Label(new Rect(Pad, _y, W, RowH), $"<b><color=#9fd3ff>{title}</color></b>");
+            GUI.Label(new Rect(Pad, _y, _w, RowH), $"<b><color=#9fd3ff>{title}</color></b>");
             _y += RowH;
         }
 
         private static void Info(string text)
         {
-            GUI.Label(new Rect(Pad + 8f, _y, W - 3 * Pad, RowH), text);
+            GUI.Label(new Rect(Pad + 8f, _y, _w - 2 * Pad, RowH), text);
             _y += RowH;
         }
 
@@ -140,7 +162,7 @@ namespace AbominableSnowman
 
         private static void Toggle(MelonPreferences_Entry<bool> e, string label)
         {
-            bool v = GUI.Toggle(new Rect(Pad + 8f, _y, W - 3 * Pad, RowH), e.Value, " " + label);
+            bool v = GUI.Toggle(new Rect(Pad + 8f, _y, _w - 2 * Pad, RowH), e.Value, " " + label);
             if (v != e.Value) { e.Value = v; _dirty = true; }
             _y += RowH;
         }
@@ -149,7 +171,7 @@ namespace AbominableSnowman
         {
             GUI.Label(new Rect(Pad + 8f, _y, LabelW, RowH), label);
             float sx = Pad + 8f + LabelW;
-            float sw = W - 24f - sx - ValueW - Pad;
+            float sw = _w - sx - ValueW - Pad;
             float v = GUI.HorizontalSlider(new Rect(sx, _y + 8f, sw, RowH), value, min, max);
             GUI.Label(new Rect(sx + sw + 8f, _y, ValueW, RowH), shown);
             _y += RowH;
